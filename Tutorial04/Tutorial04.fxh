@@ -9,7 +9,6 @@
 Texture2D txWoodColor : register(t0);
 SamplerState txWoodsamSampler : register(s0);
 
-
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
@@ -22,6 +21,7 @@ cbuffer ConstantBuffer : register(b0)
     float4 vLightColor[2];
     float3 eyePos;
     float4 vOutputColor;
+    float faceCount;
 }
 
 
@@ -62,7 +62,6 @@ PS_INPUT VS(VS_INPUT input)
     //Supposed to inverse usually, but a translation or scalar wouldn't calculate the normal correctly
     //Texture pass to pixels shader
     output.Tex = input.Tex;
-
     return output;
 }
 
