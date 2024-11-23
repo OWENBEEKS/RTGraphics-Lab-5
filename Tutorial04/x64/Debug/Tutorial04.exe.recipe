@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>C:\Users\Owen\Downloads\Graphics\RTGraphics-Lab-4\Direct3D11Tutorials\x64\Debug\Tutorial04.exe</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles>
+    <ContentFile>
+      <FullPath>C:\Users\Owen\Downloads\Graphics\RTGraphics-Lab-4\Direct3D11Tutorials\x64\Debug\Tutorial04_PS.cso</FullPath>
+    </ContentFile>
+    <ContentFile>
+      <FullPath>C:\Users\Owen\Downloads\Graphics\RTGraphics-Lab-4\Direct3D11Tutorials\x64\Debug\Tutorial04_VS.cso</FullPath>
+    </ContentFile>
+  </ContentFiles>
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>
