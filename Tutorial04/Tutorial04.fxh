@@ -5,6 +5,10 @@
 // Licensed under the MIT License (MIT).
 //--------------------------------------------------------------------------------------
 
+//Texture objects
+Texture2D txWoodColor : register(t0);
+SamplerState txWoodsamSampler : register(s0);
+
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -26,6 +30,7 @@ struct VS_INPUT
 {
     float4 Pos : POSITION;
     float3 Norm : NORMAL;
+    float2 Tex : TEXCOORD0;
 };
 
 struct PS_INPUT
@@ -33,7 +38,7 @@ struct PS_INPUT
     float4 Pos : SV_POSITION;
     float3 Norm : TEXCOORD0;
     float3 PosW : TEXCOORD01;
-
+    float2 Tex : TEXCOORD02;
 };
 
 
@@ -55,27 +60,11 @@ PS_INPUT VS(VS_INPUT input)
     output.PosW = input.Pos.xyz;
 
     //Supposed to inverse usually, but a translation or scalar wouldn't calculate the normal correctly
-    
+    //Texture pass to pixels shader
+    output.Tex = input.Tex;
+
     return output;
 }
-
-
-//--------------------------------------------------------------------------------------
-// Pixel Shader
-//--------------------------------------------------------------------------------------
-//float4 PS(PS_INPUT input) : SV_Target
-//{
-//    float4 finalColor = 0;
-     
-//    finalColor.a = 1;
-//    float3 N = normalize(input.Norm);
-//    float3 L = float3(0, 1, 0);
-    
-//    float diff = max(0.05, dot(L, N));
-    
-//    return float4(N, 1);
-//}
-
 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
@@ -100,6 +89,10 @@ float4 PS(PS_INPUT input) : SV_Target
     finalColor += pow(spec, 1) * lightCol;
     finalColor.a = 1.0;
     
-    return pow(spec, 1) + (diff) * float4(R, 1.0);
+    //return pow(spec, 1) + (diff) * float4(R, 1.0);
     //return finalColor;
+    
+    
+    float4 woodColor = txWoodColor.Sample(txWoodsamSampler, input.Tex);
+    return woodColor;
 }
