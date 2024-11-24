@@ -416,7 +416,7 @@ HRESULT InitDevice()
 	ZeroMemory(&descDepth, sizeof(descDepth));//from lab sheet this line
     descDepth.Width = width;
     descDepth.Height = height;
-    descDepth.MipLevels = 1;
+    descDepth.MipLevels = 0;
     descDepth.ArraySize = 1;
     descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     descDepth.SampleDesc.Count = 1;
@@ -441,11 +441,6 @@ HRESULT InitDevice()
 
     g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
 
-	//Texture Loading
-    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"Coin.dds", nullptr, &wood_TextureRV); 
-    if (FAILED(hr))
-        return hr;
-
 	// Create the sample state
 	D3D11_SAMPLER_DESC sampDesc = {};
 	ZeroMemory(&sampDesc, sizeof(sampDesc));//from lab sheet this line
@@ -454,19 +449,28 @@ HRESULT InitDevice()
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MipLODBias = 0.5f;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = 8;
 	hr = g_pd3dDevice->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
 
+    //Texture Loading
+    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"coin.dds", nullptr, &wood_TextureRV);
+    if (FAILED(hr))
+        return hr;
+
+    g_pImmediateContext->GenerateMips(wood_TextureRV);
 
     std::vector <SimpleVertex> vertices =
     {
         { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(2.0f, 0.0f) },
-        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(2.0f, 1.0f) },
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
         { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(3.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(3.0f, 1.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
         { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
         { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
@@ -475,18 +479,18 @@ HRESULT InitDevice()
         { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
         { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(4.0f, 0.0f) },
-        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(4.0f, 1.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) },
         { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) },
 
         { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(5.0f, 0.0f) },
-        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(5.0f, 1.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
         { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
 
         { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(6.0f, 0.0f) },
-        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(6.0f, 1.0f) },
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
         { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
     };
     D3D11_BUFFER_DESC bd = {};
@@ -574,7 +578,7 @@ HRESULT InitDevice()
 	g_World = XMMatrixIdentity();
 
     // Initialize the view matrix
-	XMVECTOR Eye = XMVectorSet( -2.0f, 2.5f, -2.0f, 0.0f );
+	XMVECTOR Eye = XMVectorSet( -2.0f, 1.5f, -4.0f, 0.0f );
 	XMVECTOR At = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	XMVECTOR Up = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	g_View = XMMatrixLookAtLH( Eye, At, Up );
@@ -668,6 +672,7 @@ void Render()
     //
     g_World = XMMatrixRotationY(0);
 
+	g_World *= XMMatrixScaling(2.0f, 1.0f, 1.0f);
     //
     // Clear the back buffer
     //

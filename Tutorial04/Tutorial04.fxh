@@ -21,7 +21,6 @@ cbuffer ConstantBuffer : register(b0)
     float4 vLightColor[2];
     float3 eyePos;
     float4 vOutputColor;
-    float faceCount;
 }
 
 
@@ -92,6 +91,6 @@ float4 PS(PS_INPUT input) : SV_Target
     //return finalColor;
     
     
-    float4 woodColor = txWoodColor.Sample(txWoodsamSampler, input.Tex);
+    float4 woodColor = txWoodColor.Sample(txWoodsamSampler, input.Tex, 1);
     return woodColor;
 }
