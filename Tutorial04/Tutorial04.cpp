@@ -73,6 +73,7 @@ XMMATRIX                g_Projection;
 ID3D11Texture2D*        g_pDepthStencil = nullptr;
 ID3D11DepthStencilView* g_pDepthStencilView = nullptr;
 ID3D11ShaderResourceView* wood_TextureRV = nullptr;
+ID3D11ShaderResourceView* tile_TextureRV = nullptr;
 ID3D11SamplerState*     g_pSamplerLinear = nullptr;
 
 
@@ -449,17 +450,16 @@ HRESULT InitDevice()
 	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	sampDesc.MipLODBias = 0.5f;
-	sampDesc.MinLOD = 0;
-	sampDesc.MaxLOD = 8;
 	hr = g_pd3dDevice->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
 
     //Texture Loading
-    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"coin.dds", nullptr, &wood_TextureRV);
+    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"wood.dds", nullptr, &wood_TextureRV);
     if (FAILED(hr))
         return hr;
 
-    g_pImmediateContext->GenerateMips(wood_TextureRV);
+    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"rocks.dds", nullptr, &tile_TextureRV);
+    if (FAILED(hr))
+        return hr;
 
     std::vector <SimpleVertex> vertices =
     {
@@ -513,8 +513,8 @@ HRESULT InitDevice()
     // Create index buffer
     std::vector <WORD> indiceslocal =
     {
-        3,1,0,
-        2,1,3,
+     /*   3,1,0,
+        2,1,3,*/
 
         6,4,5,
         7,4,6,
@@ -578,7 +578,7 @@ HRESULT InitDevice()
 	g_World = XMMatrixIdentity();
 
     // Initialize the view matrix
-	XMVECTOR Eye = XMVectorSet( -2.0f, 1.5f, -4.0f, 0.0f );
+	XMVECTOR Eye = XMVectorSet( -2.0f, 1.5f, -2.5f, 0.0f );
 	XMVECTOR At = XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
 	XMVECTOR Up = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
 	g_View = XMMatrixLookAtLH( Eye, At, Up );
@@ -672,7 +672,6 @@ void Render()
     //
     g_World = XMMatrixRotationY(0);
 
-	g_World *= XMMatrixScaling(2.0f, 1.0f, 1.0f);
     //
     // Clear the back buffer
     //
@@ -719,6 +718,7 @@ void Render()
     g_pImmediateContext->PSSetConstantBuffers(0, 1, &g_pConstantBuffer);
     //Texture Loading
     g_pImmediateContext->PSSetShaderResources(0, 1, &wood_TextureRV);
+    g_pImmediateContext->PSSetShaderResources(1, 1, &tile_TextureRV);
     g_pImmediateContext->PSSetSamplers(0, 1, &g_pSamplerLinear);
     //Final call
     g_pImmediateContext->DrawIndexed(indices.size(), 0, 0);
