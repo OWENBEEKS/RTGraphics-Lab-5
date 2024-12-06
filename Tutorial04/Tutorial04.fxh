@@ -39,7 +39,6 @@ struct PS_INPUT
     float3 Norm : TEXCOORD0;
     float3 PosW : TEXCOORD01;
     float2 Tex : TEXCOORD02;
-    bool isInside : TEXCOORD03; // New attribute to indicate inside or outside
 };
 
 
@@ -63,54 +62,19 @@ PS_INPUT VS(VS_INPUT input)
     //Supposed to inverse usually, but a translation or scalar wouldn't calculate the normal correctly
     //Texture pass to pixels shader
     output.Tex = input.Tex;
-    
-     // Determine if the face is inside or outside
-    output.isInside = dot(input.Norm, float3(3, 1, 1)) > 0;
     return output;
 }
-
-////--------------------------------------------------------------------------------------
-//// Pixel Shader
-////--------------------------------------------------------------------------------------
-//float4 PS(PS_INPUT input) : SV_Target
-//{
-//    float4 materialAmb = float4(0.1, 0.1, 0.1, 1.0);
-//    float4 materialDiff = float4(0.9, 1.0, 1.0, 1.0);
-//    float4 lightCol = float4(1.0, 0.0, 1.0, 1.0); //red
-//    float3 normal = normalize(input.Norm);
-    
-//    float3 lightDir = normalize(vLightDir[1].xyz - input.PosW.xyz);
-    
-//    float3 R = reflect(-lightDir, normal);
-//    //float3 V = normalize(eyePos - input.Pos.xyz);
-//    float3 V = normalize(float3(3, 10, 5) - input.PosW.xyz);
-//    float spec = max(0.1, dot(R, V));
-    
-//    float diff = max(0.0, dot(normal, lightDir));
-    
-//    float4 finalColor = (materialAmb + diff * materialDiff) * lightCol;
-//    finalColor += pow(spec, 1) * lightCol;
-//    finalColor.a = 1.0;
-    
-//    //return pow(spec, 1) + (diff) * float4(R, 1.0);
-//    //return finalColor;
-    
-    
-//    float4 woodColor = txWoodColor.Sample(txWoodsamSampler, 2.0 * input.Tex);
-//    float4 tileColor = txTileColor.Sample(txWoodsamSampler, input.Tex);
-//    float4 blendColor = lerp(tileColor, woodColor, 1.0f);
-//    return saturate(blendColor);
-//}
-
 
 
 float4 PS(PS_INPUT input) : SV_Target
 {
+    // Sample the textures
     float4 woodColor = txWoodColor.Sample(txWoodsamSampler, 2.0 * input.Tex);
-    float4 tileColor = txTileColor.Sample(txWoodsamSampler, input.Tex);
+    float4 tileColor = txTileColor.Sample(txWoodsamSampler, 4.0 * input.Tex);
 
-    // Select the texture based on whether the face is inside or outside
-    float4 finalColor = input.isInside ? woodColor : tileColor;
+    // Use the alpha channel of the tileColor to blend it with the woodColor
+    float alpha = tileColor.a;
+    float4 blendColor = lerp(woodColor, tileColor, alpha);
 
-    return saturate(finalColor);
+    return saturate(blendColor);
 }

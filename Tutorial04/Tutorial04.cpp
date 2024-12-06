@@ -453,11 +453,11 @@ HRESULT InitDevice()
 	hr = g_pd3dDevice->CreateSamplerState(&sampDesc, &g_pSamplerLinear);
 
     //Texture Loading
-    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"wood.dds", nullptr, &wood_TextureRV);
+    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"coin.dds", nullptr, &wood_TextureRV);
     if (FAILED(hr))
         return hr;
 
-    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"rocks.dds", nullptr, &tile_TextureRV);
+    hr = CreateDDSTextureFromFile(g_pd3dDevice, L"tiles.dds", nullptr, &tile_TextureRV);
     if (FAILED(hr))
         return hr;
 
@@ -513,8 +513,8 @@ HRESULT InitDevice()
     // Create index buffer
     std::vector <WORD> indiceslocal =
     {
-     /*   3,1,0,
-        2,1,3,*/
+        3,1,0,
+        2,1,3,
 
         6,4,5,
         7,4,6,
